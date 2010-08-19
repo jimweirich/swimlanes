@@ -6,8 +6,9 @@ if (typeof Object.create != 'function') {
   };
 }
 
-var Commit = function (lane, line, description) {
+var Commit = function (lane, line, description, type) {
   var result = {
+    type: type || 'c',
     lane: lane,
     line: line,
     description: description,
@@ -23,6 +24,9 @@ var Commit = function (lane, line, description) {
 
 var GitGrid = function () {
   var result = {
+    commits: [],
+    connections: [],
+
     drawOn: function(canvas_id) {
       this.canvas_id = canvas_id;
       this.canvas = document.getElementById(canvas_id);
@@ -55,18 +59,52 @@ var GitGrid = function () {
       this.context.strokeStyle = "#000";
       this.context.lineWidth = 3;
       this.context.stroke();
-      this.context.fillStyle = "#888";
+      if (commit.type == 'c') {
+        this.context.fillStyle = "#888";
+      } else {
+        this.context.fillStyle = "#00f";
+      }
       this.context.fill();
     },
 
-    connect: function(lane1, line1, lane2, line2) {
+    drawConnection: function(commit1, commit2) {
+      console.log("*** Drawing connection from " + commit1.description + " to " + commit2.description);
       this.context.beginPath();
-      this.context.moveTo(this.x(lane1), this.y(line1));
-      this.context.lineTo(this.x(lane2), this.y(line2));
+      this.context.moveTo(this.x(commit1.lane), this.y(commit1.line));
+      this.context.lineTo(this.x(commit2.lane), this.y(commit2.line));
       this.context.strokeStyle = "#000";
       this.context.lineWidth = 3;
       this.context.stroke();
     },
+
+    render: function() {
+      this.drawConnections();
+      this.drawCommits();
+    },
+
+    drawConnections: function() {
+      for (var i=0; i < this.connections.length; i++) {
+        var c1 = this.connections[i][0];
+        var c2 = this.connections[i][1];
+        this.drawConnection(c1, c2);
+      }
+    },
+
+    drawCommits: function() {
+      for (var i=0; i<this.commits.length; i++) {
+        console.log("Drawing commit " + this.commits[i].description);
+        this.drawCommit(this.commits[i]);
+      }
+    },
+
+    addCommit: function(commit) {
+      this.commits.push(commit);
+    },
+
+    connect: function(commit1, commit2) {
+      this.connections.push([commit1, commit2]);
+    }
+
   }
   return result;
 }
@@ -75,11 +113,16 @@ var GitGrid = function () {
 function drawGrid() {
   var gg = new GitGrid();
   gg.drawOn("canvas");
-  gg.connect(0,0,1,1);
-  gg.drawCommit(new Commit(0,0, 'a'));
-  gg.drawCommit(new Commit(1,1, 'a'));
-  var c = new Commit(3, 5, 'A commit');
-  c.draw(gg);
+  gg.layout(3);
+  var a = new Commit(0, 0, 'a');
+  var b = new Commit(1, 1, 'b');
+  var c = new Commit(2, 3, 'c', 'm');
+  gg.addCommit(a);
+  gg.addCommit(b);
+  gg.addCommit(c);
+  gg.connect(a, c);
+  gg.connect(b, c);
+  gg.render();
 }
 // -------------------------------------------------------------------
 

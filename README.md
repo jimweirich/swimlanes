@@ -23,4 +23,6 @@ the result of my Whyday efforts.
 
 (see [Whyday](http://whyday.org "Whyday") for more details on Whyday)
 
-<canvas id="canvas">default</canvas>
+# Example:
+
+![sample swimlane](samples/swimlanes.jpg)

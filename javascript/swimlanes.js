@@ -1,24 +1,25 @@
-var Commit = function (hash, lane, line, description, type) {
-  var result = {
-    hash: hash,
-    type: type || 'c',
-    lane: lane,
-    line: line,
-    description: description,
-  };
-  return result;
-}
-
-var Branch = function (name, lane, line) {
-  var result = {
-    name: name,
-    lane: lane,
-    line: line,
-  };
-  return result;
-}
-
 var SwimLanes = function (canvasId) {
+
+  var Commit = function (hash, lane, line, description, type) {
+    var result = {
+      hash: hash,
+      type: type || 'c',
+      lane: lane,
+      line: line,
+      description: description,
+    };
+    return result;
+  }
+
+  var Branch = function (name, lane, line) {
+    var result = {
+      name: name,
+      lane: lane,
+      line: line,
+    };
+    return result;
+  }
+
   var result = {
 
     // Public API ----------------------------------------------------

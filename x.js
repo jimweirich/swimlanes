@@ -21,62 +21,65 @@ var Commit = function (lane, line, description) {
 
 // -------------------------------------------------------------------
 
-var GitGrid = {};
+var GitGrid = function () {
+  var result = {
+    drawOn: function(canvas_id) {
+      this.canvas_id = canvas_id;
+      this.canvas = document.getElementById(canvas_id);
+      this.context = this.canvas.getContext("2d");
+      this.lane_width = 40;
+    },
 
-GitGrid.drawOn = function(canvas_id) {
-  this.canvas_id = canvas_id;
-  this.canvas = document.getElementById(canvas_id);
-  this.context = this.canvas.getContext("2d");
-  this.lane_width = 40;
-  console.log("drawOn DONE");
-};
+    layout: function (lanes) {
+      this.lanes = lanes;
+    },
 
-GitGrid.layout = function (lanes) {
-  this.lanes = lanes;
-};
+    scale: function (n) {
+      return n * this.lane_width;
+    },
 
-GitGrid.scale = function (n) {
-  return n * this.lane_width;
-};
+    x: function (lane) {
+      return lane * this.lane_width + this.lane_width / 2.0;
+    },
 
-GitGrid.x = function (lane) {
-  return lane * this.lane_width + this.lane_width / 2.0;
-};
+    y: function (line) {
+      return line * this.lane_width + this.lane_width / 2.0;
+    },
 
-GitGrid.y = function (line) {
-  return line * this.lane_width + this.lane_width / 2.0;
-};
+    drawCommit: function(commit) {
+      var x = this.x(commit.lane);
+      var y = this.y(commit.line);
+      this.context.beginPath();
+      this.context.arc(x, y, this.scale(0.2), Math.PI*2, false);
+      this.context.closePath();
+      this.context.strokeStyle = "#000";
+      this.context.lineWidth = 3;
+      this.context.stroke();
+      this.context.fillStyle = "#888";
+      this.context.fill();
+    },
 
-GitGrid.drawCommit = function(commit) {
-  var x = this.x(commit.lane);
-  var y = this.y(commit.line);
-  this.context.beginPath();
-  this.context.arc(x, y, this.scale(0.2), Math.PI*2, false);
-  this.context.closePath();
-  this.context.strokeStyle = "#000";
-  this.context.lineWidth = 3;
-  this.context.stroke();
-  this.context.fillStyle = "#888";
-  this.context.fill();
-}
-
-GitGrid.connect = function(lane1, line1, lane2, line2) {
-  this.context.beginPath();
-  this.context.moveTo(this.x(lane1), this.y(line1));
-  this.context.lineTo(this.x(lane2), this.y(line2));
-  this.context.strokeStyle = "#000";
-  this.context.lineWidth = 3;
-  this.context.stroke();
+    connect: function(lane1, line1, lane2, line2) {
+      this.context.beginPath();
+      this.context.moveTo(this.x(lane1), this.y(line1));
+      this.context.lineTo(this.x(lane2), this.y(line2));
+      this.context.strokeStyle = "#000";
+      this.context.lineWidth = 3;
+      this.context.stroke();
+    },
+  }
+  return result;
 }
 
 // -------------------------------------------------------------------
 function drawGrid() {
-  GitGrid.drawOn("canvas");
-  GitGrid.connect(0,0,1,1);
-  GitGrid.drawCommit(new Commit(0,0, 'a'));
-  GitGrid.drawCommit(new Commit(1,1, 'a'));
+  var gg = new GitGrid();
+  gg.drawOn("canvas");
+  gg.connect(0,0,1,1);
+  gg.drawCommit(new Commit(0,0, 'a'));
+  gg.drawCommit(new Commit(1,1, 'a'));
   var c = new Commit(3, 5, 'A commit');
-  c.draw(GitGrid);
+  c.draw(gg);
 }
 // -------------------------------------------------------------------
 

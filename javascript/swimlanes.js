@@ -41,10 +41,57 @@ var SwimLanes = function (canvasId) {
 
     render: function() {
       this.calculateSize();
-      this.outline("#eee");
-      this.renderConnections();
-      this.renderCommits();
-      this.renderBranches();
+      this.renderElements();
+    },
+
+    getCursorPosition: function (e) {
+      var x;
+      var y;
+      if (e.pageX || e.pageY) {
+	x = e.pageX;
+	y = e.pageY;
+      }
+      else {
+	x = e.clientX + document.body.scrollLeft +
+        document.documentElement.scrollLeft;
+	y = e.clientY + document.body.scrollTop +
+        document.documentElement.scrollTop;
+      }
+
+      x -= this.canvas.offsetLeft;
+      y -= this.canvas.offsetTop;
+
+      var cell = {
+//        x: Math.floor(y/kPieceWidth),
+//        y: Math.floor(x/kPieceHeight),
+        x: x, y: y,
+      };
+
+      return cell;
+    },
+
+    whatLane: function(x) {
+      x = x - 30;               // Lame, this comes from the padding
+      var lane = Math.floor(x / this.laneWidth);
+      if (lane >= this.lanes) {
+        lane = -1;
+      }
+      return lane;
+    },
+
+    click: function(e) {
+      var cell = this.getCursorPosition(e);
+      var x = cell.x;
+      var y = cell.y;
+
+      //console.log("CLICKED, x=" + x + ", y=" + y);
+      var newLane = this.whatLane(x);
+      if (newLane === this.highLight) {
+        this.highLight = -1;
+      } else {
+        this.highLight = newLane;
+      }
+      this.renderElements(true);
     },
 
     // Private -------------------------------------------------------
@@ -55,6 +102,7 @@ var SwimLanes = function (canvasId) {
     branches: [],
     lanes: 0,
     pts: 14,
+    highLight: -1,
 
     calculateSize: function () {
       this.laneWidth = 40;
@@ -66,6 +114,8 @@ var SwimLanes = function (canvasId) {
       this.context = this.canvas.getContext("2d");
       this.canvas.width = this.width;
       this.canvas.height = this.height;
+
+      this.canvas.addEventListener("click", function(e) { result.click(e); } );
     },
 
     calculateWidth: function () {
@@ -77,7 +127,6 @@ var SwimLanes = function (canvasId) {
         }
       }
       this.width = (12 + longest) * this.pts * 0.5 + this.x(this.lanes);
-      console.log("w=" + this.width + ", pts=" + this.pts + ", lanes=" + this.lanes);
     },
 
     calculateHeight: function() {
@@ -97,6 +146,7 @@ var SwimLanes = function (canvasId) {
     outline: function (backgroundStyle) {
       var w = this.canvas.width;
       var h = this.canvas.height;
+      this.canvas.width = w;
 
       this.context.beginPath();
       this.context.moveTo(0.5, 0.5);
@@ -126,7 +176,7 @@ var SwimLanes = function (canvasId) {
       return line * h + h / 2.0;
     },
 
-    renderCommit: function(commit) {
+    renderCommit: function(commit, dim) {
       var x = this.x(commit.lane);
       var y = this.y(commit.line);
       this.context.beginPath();
@@ -135,14 +185,18 @@ var SwimLanes = function (canvasId) {
       this.context.strokeStyle = "#000";
       this.context.lineWidth = 3;
       this.context.stroke();
-      if (commit.type == 'c') {
+      if (commit.type === 'c') {
         this.context.fillStyle = "#888";
       } else {
         this.context.fillStyle = "#00f";
       }
       this.context.fill();
 
-      this.context.fillStyle = "#000";
+      if (dim) {
+        this.context.fillStyle = "#ccc";
+      } else {
+        this.context.fillStyle = "#000";
+      }
       this.context.font = 'normal 12px sans-serif';
       this.context.textBaseline = 'middle';
       this.context.textAlign = "left";
@@ -203,7 +257,7 @@ var SwimLanes = function (canvasId) {
     renderCommits: function() {
       for (var i in this.commits) {
         var commit = this.commits[i];
-        this.renderCommit(commit);
+        this.renderCommit(commit, this.highLight >= 0 && commit.lane !== this.highLight);
       }
     },
 
@@ -214,6 +268,12 @@ var SwimLanes = function (canvasId) {
       }
     },
 
+    renderElements: function () {
+      this.outline("#eee");
+      this.renderConnections();
+      this.renderCommits();
+      this.renderBranches();
+    },
   }
   return result;
 }

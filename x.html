@@ -15,9 +15,10 @@
    <script src="x.js"></script>
  </head>
   <body>
-    <canvas id="canvas" width="600" height="1000">Default text</canvas>
+    <canvas id="canvas" onclick="javascript:function() { alert("HI"); sl.click; }">Default text</canvas>
     <script>
-     drawGrid();
-   </script>
+      var sl = swim("canvas");
+      sl.render();
+    </script>
   </body>
 </html>

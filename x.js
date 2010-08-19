@@ -1,6 +1,6 @@
 
-function drawGrid() {
-  var sl = new SwimLanes('canvas', 1000, 800);
+function swim(canvasId) {
+  var sl = new SwimLanes(canvasId);
 
   sl.addBranch("Prod", 0);
   sl.addCommit('a127846d', 0, 'Initial commit (Jim Weirich)');
@@ -47,6 +47,6 @@ function drawGrid() {
   sl.connect('f497f0a5', 'b4f0bb37');
   sl.connect('d265be23', 'b3f70bb');
 
-  sl.render();
+  return sl;
 }
 

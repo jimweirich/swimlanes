@@ -21,6 +21,7 @@ var Commit = function (hash, lane, line, description, type) {
 
 var GitGrid = function () {
   var result = {
+    line: 0,
     commits: {},
     connections: [],
     branches: [],
@@ -78,6 +79,9 @@ var GitGrid = function () {
     },
 
     renderConnection: function(commit1, commit2) {
+      if (! commit1 || ! commit2) {
+        return;
+      }
       console.log(commit1);
       console.log("*** Drawing connection from " + commit1.description + " to " + commit2.description);
       var x1 = this.x(commit1.lane);
@@ -120,7 +124,7 @@ var GitGrid = function () {
 
     renderCommits: function() {
       for (var i in this.commits) {
-        var commit= this.commits[i];
+        var commit = this.commits[i];
         console.log("Drawing commit " + commit.description);
         this.renderCommit(commit);
       }
@@ -131,17 +135,20 @@ var GitGrid = function () {
       }
     },
 
-    addCommit: function(commit) {
-      console.log("Adding commit '" + commit.hash + "' (" + commit.description + ")");
-      this.commits[commit.hash] = commit;
-      console.log(this.commits);
+    addCommit: function(hash, lane, description, type) {
+      var c = new Commit(hash, lane, this.line, description, type);
+      console.log("Adding commt '" + c.hash + "' (" + c.description + ")");
+      this.line += 1;
+      this.commits[hash] = c;
     },
 
     connect: function(commit1, commit2) {
       this.connections.push([commit1, commit2]);
     },
 
-    addBranch: function() {
+    addBranch: function(branchName) {
+      this.branches.push(new Branch(branchName, this.line));
+      this.line += 1;
     },
 
   }
@@ -154,23 +161,42 @@ function drawGrid() {
   gg.drawOn("canvas");
   gg.layout(6);
 
-  gg.addBranch(0, 0, "Prod");
-  gg.addCommit(new Commit('a1', 0, 0, 'Initial commit (Jim Weirich)'));
-  gg.addCommit(new Commit('b1', 1, 1, 'New Feature Branch (Jim Weirich)'));
-  gg.addCommit(new Commit('c1', 2, 2, 'another feature branch (Jim Weirich)'));
-  gg.addCommit(new Commit('c2', 2, 3, 'another feature branch (Jim Weirich)'));
-  gg.addCommit(new Commit('x' , 5, 4, 'huh'));
-  gg.addCommit(new Commit('b2', 1, 5, 'Converted GitGrid to a class like object (Jim Weirich)'));
-  gg.addCommit(new Commit('a2', 0, 6, 'Merge to production (Jim Weirich)', 'm'));
+  gg.addBranch("Prod");
+  gg.addCommit('a127846d', 0, 'Initial commit (Jim Weirich)');
+  gg.addCommit('b17c3898', 1, 'New Feature Branch (Jim Weirich)');
+  gg.addCommit('c1f8c863', 2, 'another feature branch (Jim Weirich)');
+  gg.addCommit('c2641c99', 2, 'another feature branch (Jim Weirich)');
+  gg.addCommit('a27bf806', 0, 'Merge to production (Jim Weirich)', 'm');
+  gg.addCommit('f12f1158', 5, 'huh');
+  gg.addCommit('f2e605dd', 5, 'huh');
+  gg.addCommit('f346ab65', 5, 'huh');
+  gg.addCommit('f497f0a5', 5, 'huh');
+  gg.addCommit('b2f0bb37', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
+  gg.addCommit('a3c2b1b7', 0, 'Merge to production (Jim Weirich)', 'm');
+  gg.addCommit('a444807b', 0, 'Merge to production (Jim Weirich)', 'm');
 
-  gg.connect('a1', 'b1');
-  gg.connect('a1', 'c1');
-  gg.connect('b1', 'b2');
-  gg.connect('c1', 'c2');
-  gg.connect('c2', 'a2');
-  gg.connect('a1', 'x');
+  gg.connect('a127846d', 'a27bf806');
+  gg.connect('a27bf806', 'a3c2b1b7');
+  gg.connect('a3c2b1b7', 'a444807b');
+
+  gg.connect('b17c3898', 'b2f0bb37');
+
+  gg.connect('c1f8c863', 'c2641c99');
+
+  gg.connect('f12f1158', 'f2e605dd');
+  gg.connect('f2e605dd', 'f346ab65');
+  gg.connect('f346ab65', 'f497f0a5');
+
+  gg.connect('a127846d', 'b17c3898');
+  gg.connect('a127846d', 'c1f8c863');
+  gg.connect('a127846d', 'f12f1158');
+  gg.connect('c2641c99', 'a27bf806');
+  gg.connect('b2f0bb37', 'a3c2b1b7');
+  gg.connect('f497f0a5', 'a444807b');
 
   gg.render();
+
+  // d0a2ed99548234f51126a77d5b16fc3789
 }
 // -------------------------------------------------------------------
 

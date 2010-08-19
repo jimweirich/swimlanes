@@ -1,0 +1,120 @@
+body,
+html {
+    margin:0;
+    padding:0;
+    background:#fff;
+    color:#000;
+    font-family: helvetica, ariel;
+}
+body {
+    min-width:750px;
+}
+#wrap {
+    background:#99c;
+    margin:0 auto;
+    width:750px;
+}
+header {
+    background:#ddd;
+}
+header h1 {
+    padding:5px;
+    margin:0;
+    font-weight: bold;
+}
+header h2 {
+    padding:5px;
+    margin:0;
+    padding-bottom: 0.5em;
+    font-size: 80%;
+    font-weight: normal;
+    font-style: italic;
+}
+body nav {
+    background:#c99;
+    padding: 5px;
+}
+nav ul{
+    margin:0;
+    padding:0px;
+    padding:5px;
+    list-style:none;
+}
+nav li{
+    background:#c99;
+    display:inline;
+    margin:0;
+    padding:5px;
+}
+nav .highlight {
+    background: #9c9;
+}
+#content {
+    padding: 1em;
+    background:#9c9;
+    float:left;
+    width:500px;
+}
+#content h1 {
+    font-size: 150%;
+    padding: 0.5em 0em;
+}
+#content h2, #content h3, #content p {
+    padding: 0 10px;
+}
+#sidebar {
+    background:#99c;
+    float:right;
+    width:240px;
+}
+#sidebar h1 {
+    font-size: 110%;
+}
+#sidebar h1, h3, #sidebar p {
+    padding:0 10px 0 0;
+}
+#sidebar ul {
+    margin-bottom:0;
+}
+#sidebar h3, #sidebar p {
+    padding:0 10px;
+}
+footer {
+    background:#cc9;
+    clear:both;
+    padding:5px;
+}
+footer p {
+    padding: 5px 0px;
+    margin:0;
+}
+.small_link {
+    font-size: 70%;
+}
+
+/* ERRORS */
+
+.errorExplanation {
+    margin: 0.5em 3em;
+    border: red solid 2px;
+    background: white;
+    font-size: 80%;
+}
+.errorExplanation h2 {
+    font-size: 120%;
+}
+.errorExplanation li {
+    color: red;
+}
+.fieldWithErrors input {
+    border: red solid 2px;
+}
+ul, li {
+    margin: 0.2em 1em;
+}
+.post-title {
+    font-weight: bold;
+}
+.post-details {
+    font-size: 70%;
+}

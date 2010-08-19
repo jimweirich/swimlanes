@@ -18,57 +18,110 @@ var Branch = function (name, lane, line) {
   return result;
 }
 
-var SwimLanes = function () {
+var SwimLanes = function (canvasId) {
   var result = {
+
+    // Public API ----------------------------------------------------
+
+    addCommit: function(hash, lane, description, type) {
+      var c = new Commit(hash, lane, this.line, description, type);
+      this.line += 1;
+      this.commits[hash] = c;
+    },
+
+    connect: function(commit1, commit2) {
+      this.connections.push([commit1, commit2]);
+    },
+
+    addBranch: function(branchName, lane) {
+      this.branches.push(new Branch(branchName, lane, this.line));
+      this.line += 1;
+    },
+
+    render: function() {
+      this.calculateSize();
+      this.outline("#eee");
+      this.renderConnections();
+      this.renderCommits();
+      this.renderBranches();
+    },
+
+    // Private -------------------------------------------------------
+
     line: 0,
     commits: {},
     connections: [],
     branches: [],
     lanes: 0,
+    pts: 14,
+
+    calculateSize: function () {
+      this.laneWidth = 40;
+      this.lineHeight = this.laneWidth * 0.6;
+      this.updateLanes();
+      this.calculateWidth();
+      this.calculateHeight();
+      this.canvas = document.getElementById(canvasId);
+      this.context = this.canvas.getContext("2d");
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+    },
+
+    calculateWidth: function () {
+      var longest = 0;
+      for (i in this.commits) {
+        var c = this.commits[i];
+        if (c.description.length > longest) {
+          longest = c.description.length;
+        }
+      }
+      this.width = (12 + longest) * this.pts * 0.5 + this.x(this.lanes);
+      console.log("w=" + this.width + ", pts=" + this.pts + ", lanes=" + this.lanes);
+    },
+
+    calculateHeight: function() {
+      this.height = this.line * this.lineHeight + 20;
+    },
 
     updateLanes: function () {
       this.lanes = 0;
       for (i in this.branches) {
         if (this.branches[i].lane > this.lanes) {
-          console.log("Branch " + i + ": " + this.branches[i].lane);
           this.lanes = this.branches[i].lane;
         }
       }
       this.lanes += 1;
-      console.log("Lanes = " + this.lanes);
     },
 
-    outline: function () {
+    outline: function (backgroundStyle) {
+      var w = this.canvas.width;
+      var h = this.canvas.height;
+
       this.context.beginPath();
-      this.context.moveTo(0.5,0.5);
-      this.context.lineTo(0.5, canvas.height-0.5);
-      this.context.lineTo(canvas.width-0.5, canvas.height-0.5);
-      this.context.lineTo(canvas.width-0.5, 0.5);
+      this.context.moveTo(0.5, 0.5);
+      this.context.lineTo(0.5, h-0.5);
+      this.context.lineTo(w-0.5, h-0.5);
+      this.context.lineTo(w-0.5, 0.5);
       this.context.lineTo(0.5, 0.5);
       this.context.strokeStyle = "#000";
       this.context.stroke();
-    },
 
-    drawOn: function(canvas_id, width, heigth) {
-      this.canvas_id = canvas_id;
-      this.canvas = document.getElementById(canvas_id);
-      this.context = this.canvas.getContext("2d");
-      this.canvas.width = width;
-      this.canvas.heigth = heigth;
-      this.lane_width = 40;
-      this.outline();
+      if (backgroundStyle) {
+        this.context.fillStyle = backgroundStyle || "#fff";
+        this.context.fillRect(1, 1, w-2, h-2);
+      }
     },
 
     scale: function (n) {
-      return n * this.lane_width;
+      return n * this.laneWidth;
     },
 
     x: function (lane) {
-      return lane * this.lane_width + this.lane_width / 2.0;
+      return lane * this.laneWidth + this.laneWidth / 2.0;
     },
 
     y: function (line) {
-      var h = this.lane_width * 0.6;
+      var h = this.lineHeight;
       return line * h + h / 2.0;
     },
 
@@ -125,12 +178,10 @@ var SwimLanes = function () {
     },
 
     renderBranch: function(branch) {
-      console.log("Rendering branch " + branch.name + ", x=" + this.x(branch.lane) + ", y=" + this.y(branch.line));
-      var pts = 14;
+      var pts = this.pts;
       var w = branch.name.length * pts * 0.6;
       var x = this.x(branch.lane);
       var y = this.y(branch.line);
-      console.log('ns=' + branch.name.length + ', w=' + w);
       this.context.clearRect(x-w/2.0, y-9, w, pts+4);
       this.context.fillStyle = "#000";
       this.context.font = 'bold ' + pts + 'px sans-serif';
@@ -160,31 +211,6 @@ var SwimLanes = function () {
         var branch = this.branches[i];
         this.renderBranch(branch);
       }
-    },
-
-    addCommit: function(hash, lane, description, type) {
-      var c = new Commit(hash, lane, this.line, description, type);
-      this.line += 1;
-      this.commits[hash] = c;
-    },
-
-    connect: function(commit1, commit2) {
-      this.connections.push([commit1, commit2]);
-    },
-
-    addBranch: function(branchName, lane) {
-      this.branches.push(new Branch(branchName, lane, this.line));
-      this.line += 1;
-    },
-
-    render: function() {
-      this.drawOn("canvas", 1000, 800);
-      this.updateLanes();
-//      this.context.fillStyle = "#eee";
-//      this.context.fillRect(0, 0, this.canvas.width, this.canvas.heigth);
-      this.renderConnections();
-      this.renderCommits();
-      this.renderBranches();
     },
 
   }

@@ -139,15 +139,6 @@ var SwimLanes = function () {
       this.context.fillText(branch.name, this.x(branch.lane), this.y(branch.line));
     },
 
-    render: function() {
-      this.updateLanes();
-//      this.context.fillStyle = "#eee";
-//      this.context.fillRect(0, 0, this.canvas.width, this.canvas.heigth);
-      this.renderConnections();
-      this.renderCommits();
-      this.renderBranches();
-    },
-
     renderConnections: function() {
       for (var i in this.connections) {
         var pair = this.connections[i];
@@ -184,6 +175,16 @@ var SwimLanes = function () {
     addBranch: function(branchName, lane) {
       this.branches.push(new Branch(branchName, lane, this.line));
       this.line += 1;
+    },
+
+    render: function() {
+      this.drawOn("canvas", 1000, 800);
+      this.updateLanes();
+//      this.context.fillStyle = "#eee";
+//      this.context.fillRect(0, 0, this.canvas.width, this.canvas.heigth);
+      this.renderConnections();
+      this.renderCommits();
+      this.renderBranches();
     },
 
   }

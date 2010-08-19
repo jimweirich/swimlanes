@@ -25,4 +25,4 @@ the result of my Whyday efforts.
 
 # Example:
 
-![sample swimlane](samples/swimlanes.jpg)
+![sample swimlane](http://github.com/jimweirich/swimlanes/raw/master/samples/swimlanes.jpg)

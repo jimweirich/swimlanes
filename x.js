@@ -69,7 +69,7 @@ var GitGrid = function () {
     },
 
     y: function (line) {
-      var h = this.lane_width * 0.7;
+      var h = this.lane_width * 0.6;
       return line * h + h / 2.0;
     },
 
@@ -199,10 +199,10 @@ function drawGrid() {
   gg.addBranch("Prod", 0);
   gg.addCommit('a127846d', 0, 'Initial commit (Jim Weirich)');
   gg.addBranch("Development", 1);
-  gg.addCommit('b17c3898', 1, 'New Feature Branch (Jim Weirich)');
+  gg.addCommit('b17c3898', 1, 'Development Branch (Jim Weirich)');
   gg.addBranch("Feature 1", 2);
-  gg.addCommit('c1f8c863', 2, 'another feature branch (Jim Weirich)');
-  gg.addCommit('c2641c99', 2, 'another feature branch (Jim Weirich)');
+  gg.addCommit('c1f8c863', 2, 'Feature branch (Jim Weirich)');
+  gg.addCommit('c2641c99', 2, 'Another feature branch (Jim Weirich)');
   gg.addBranch("Feature 2", 3);
   gg.addCommit('d146ab65', 3, 'Starting another feature (Jim Weirich)');
   gg.addCommit('b220bb37', 1, "Merge to dev", 'm');
@@ -211,17 +211,17 @@ function drawGrid() {
   gg.addCommit('f12f1158', 4, 'huh');
   gg.addCommit('d265be23', 3, 'fixed bugs (Jim Weirich)');
   gg.addCommit('f2e605dd', 4, 'huh');
+  gg.addCommit('b3f70bb', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
   gg.addCommit('f346ab65', 4, 'huh');
   gg.addCommit('f497f0a5', 4, 'huh');
-  gg.addCommit('b2f0bb37', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
+  gg.addCommit('b4f0bb37', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
   gg.addCommit('a3c2b1b7', 0, 'Merge to production (Jim Weirich)', 'm');
-  gg.addCommit('a444807b', 0, 'Merge to production (Jim Weirich)', 'm');
 
   gg.connect('a127846d', 'a27bf806');
   gg.connect('a27bf806', 'a3c2b1b7');
   gg.connect('a3c2b1b7', 'a444807b');
 
-  gg.connect('b17c3898', 'b2f0bb37');
+  gg.connect('b17c3898', 'b4f0bb37');
 
   gg.connect('c1f8c863', 'c2641c99');
 
@@ -237,9 +237,9 @@ function drawGrid() {
   gg.connect('a27bf806', 'f12f1158');
   gg.connect('c2641c99', 'b220bb37');
   gg.connect('b220bb37', 'a27bf806');
-  gg.connect('b2f0bb37', 'a3c2b1b7');
-  gg.connect('f497f0a5', 'b2f0bb37');
-  gg.connect('d265be23', 'a444807b');
+  gg.connect('b4f0bb37', 'a3c2b1b7');
+  gg.connect('f497f0a5', 'b4f0bb37');
+  gg.connect('d265be23', 'b3f70bb');
 
   gg.render();
 }
@@ -275,10 +275,4 @@ function draw_curve() {
   context.strokeStyle = "#00ff00";
   context.lineWidth = 10;
   context.stroke();
-}
-
-function GitGraph() {
-  {
-    
-  }
 }

@@ -2,7 +2,7 @@
 
 The other day we were talking about git workflows and noted that the
 notation used in [the NVIE article](http://nvie.com/git-model "Git
-Model") was pretty cool, but none of our git ttols drew the commit
+Model") was pretty cool, but none of our git tools drew the commit
 graph in that manner.
 
 Wouldn't it be nice to have something like that.

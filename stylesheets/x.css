@@ -92,6 +92,10 @@ footer p {
     font-size: 70%;
 }
 
+canvas {
+    padding: 30px;
+}
+
 /* ERRORS */
 
 .errorExplanation {

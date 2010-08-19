@@ -22,3 +22,5 @@ drawing, and a javascript library to structure the data.  Swimlanes is
 the result of my Whyday efforts.
 
 (see [Whyday](http://whyday.org "Whyday") for more details on Whyday)
+
+<canvas id="canvas">default</canvas>

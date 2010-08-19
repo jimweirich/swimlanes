@@ -26,3 +26,11 @@ the result of my Whyday efforts.
 # Example:
 
 ![sample swimlane](http://github.com/jimweirich/swimlanes/raw/master/samples/swimlanes.jpg)
+
+# Code
+
+The above graph was generated from the following data:
+
+<pre>
+
+</pre>

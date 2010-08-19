@@ -31,9 +31,7 @@ the result of my Whyday efforts.
 
 The above graph was generated from the following data:
 
-<pre>
-
-function drawGrid() {
+<pre>function drawGrid() {
   var sl = new SwimLanes();
 
   sl.drawOn("canvas", 1000, 800);
@@ -47,16 +45,16 @@ function drawGrid() {
   sl.addCommit('c2641c99', 2, 'Another feature branch (Jim Weirich)');
   sl.addBranch("Feature 2", 3);
   sl.addCommit('d146ab65', 3, 'Starting another feature (Jim Weirich)');
-  sl.addCommit('b220bb37', 1, "Merge to dev", 'm');
+  sl.addCommit('b220bb37', 1, 'Merge to dev (Jim Weirich)', 'm');
   sl.addCommit('a27bf806', 0, 'Merge to production (Jim Weirich)', 'm');
   sl.addBranch("Feature 3", 4);
-  sl.addCommit('f12f1158', 4, 'huh');
+  sl.addCommit('f12f1158', 4, 'huh (Jim Weirich)');
   sl.addCommit('d265be23', 3, 'fixed bugs (Jim Weirich)');
-  sl.addCommit('f2e605dd', 4, 'bleh');
-  sl.addCommit('b3f70bb', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
-  sl.addCommit('f346ab65', 4, 'meh');
-  sl.addCommit('f497f0a5', 4, 'oops');
-  sl.addCommit('b4f0bb37', 1, 'Renamed GitGrid to SwimLanes (Jim Weirich)');
+  sl.addCommit('f2e605dd', 4, 'bleh (Jim Weirich)');
+  sl.addCommit('b3f70bb', 1, 'Merge feature branch 2 (Jim Weirich)', 'm');
+  sl.addCommit('f346ab65', 4, 'meh (Jim Weirich)');
+  sl.addCommit('f497f0a5', 4, 'oops (Jim Weirich)');
+  sl.addCommit('b4f0bb37', 1, 'Merge feature branch 3 (Jim Weirich)', 'm');
   sl.addCommit('a3c2b1b7', 0, 'Merge to production (Jim Weirich)', 'm');
 
   sl.connect('a127846d', 'a27bf806');
@@ -89,4 +87,4 @@ function drawGrid() {
 
 # TODO
 
-* Write some Ruby code to get a real git repository in that format.
+* Write some Ruby code to actually get a real git repository in that format.

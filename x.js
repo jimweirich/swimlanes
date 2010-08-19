@@ -28,12 +28,25 @@ var Branch = function (name, lane, line) {
 
 // -------------------------------------------------------------------
 
-var GitGrid = function () {
+var SwimLanes = function () {
   var result = {
     line: 0,
     commits: {},
     connections: [],
     branches: [],
+    lanes: 0,
+
+    updateLanes: function () {
+      this.lanes = 0;
+      for (i in this.branches) {
+        if (this.branches[i].lane > this.lanes) {
+          console.log("Branch " + i + ": " + this.branches[i].lane);
+          this.lanes = this.branches[i].lane;
+        }
+      }
+      this.lanes += 1;
+      console.log("Lanes = " + this.lanes);
+    },
 
     outline: function () {
       this.context.beginPath();
@@ -54,10 +67,6 @@ var GitGrid = function () {
       this.canvas.heigth = heigth;
       this.lane_width = 40;
       this.outline();
-    },
-
-    layout: function (lanes) {
-      this.lanes = lanes;
     },
 
     scale: function (n) {
@@ -141,6 +150,7 @@ var GitGrid = function () {
     },
 
     render: function() {
+      this.updateLanes();
 //      this.context.fillStyle = "#eee";
 //      this.context.fillRect(0, 0, this.canvas.width, this.canvas.heigth);
       this.renderConnections();
@@ -191,57 +201,58 @@ var GitGrid = function () {
 }
 
 // -------------------------------------------------------------------
+
 function drawGrid() {
-  var gg = new GitGrid();
-  gg.drawOn("canvas", 1000, 800);
-  gg.layout(6);
+  var sl = new SwimLanes();
 
-  gg.addBranch("Prod", 0);
-  gg.addCommit('a127846d', 0, 'Initial commit (Jim Weirich)');
-  gg.addBranch("Development", 1);
-  gg.addCommit('b17c3898', 1, 'Development Branch (Jim Weirich)');
-  gg.addBranch("Feature 1", 2);
-  gg.addCommit('c1f8c863', 2, 'Feature branch (Jim Weirich)');
-  gg.addCommit('c2641c99', 2, 'Another feature branch (Jim Weirich)');
-  gg.addBranch("Feature 2", 3);
-  gg.addCommit('d146ab65', 3, 'Starting another feature (Jim Weirich)');
-  gg.addCommit('b220bb37', 1, "Merge to dev", 'm');
-  gg.addCommit('a27bf806', 0, 'Merge to production (Jim Weirich)', 'm');
-  gg.addBranch("Feature 3", 4);
-  gg.addCommit('f12f1158', 4, 'huh');
-  gg.addCommit('d265be23', 3, 'fixed bugs (Jim Weirich)');
-  gg.addCommit('f2e605dd', 4, 'huh');
-  gg.addCommit('b3f70bb', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
-  gg.addCommit('f346ab65', 4, 'huh');
-  gg.addCommit('f497f0a5', 4, 'huh');
-  gg.addCommit('b4f0bb37', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
-  gg.addCommit('a3c2b1b7', 0, 'Merge to production (Jim Weirich)', 'm');
+  sl.drawOn("canvas", 1000, 800);
 
-  gg.connect('a127846d', 'a27bf806');
-  gg.connect('a27bf806', 'a3c2b1b7');
-  gg.connect('a3c2b1b7', 'a444807b');
+  sl.addBranch("Prod", 0);
+  sl.addCommit('a127846d', 0, 'Initial commit (Jim Weirich)');
+  sl.addBranch("Development", 1);
+  sl.addCommit('b17c3898', 1, 'Development Branch (Jim Weirich)');
+  sl.addBranch("Feature 1", 2);
+  sl.addCommit('c1f8c863', 2, 'Feature branch (Jim Weirich)');
+  sl.addCommit('c2641c99', 2, 'Another feature branch (Jim Weirich)');
+  sl.addBranch("Feature 2", 3);
+  sl.addCommit('d146ab65', 3, 'Starting another feature (Jim Weirich)');
+  sl.addCommit('b220bb37', 1, "Merge to dev", 'm');
+  sl.addCommit('a27bf806', 0, 'Merge to production (Jim Weirich)', 'm');
+  sl.addBranch("Feature 3", 4);
+  sl.addCommit('f12f1158', 4, 'huh');
+  sl.addCommit('d265be23', 3, 'fixed bugs (Jim Weirich)');
+  sl.addCommit('f2e605dd', 4, 'huh');
+  sl.addCommit('b3f70bb', 1, 'Converted GitGrid to a class like object (Jim Weirich)');
+  sl.addCommit('f346ab65', 4, 'huh');
+  sl.addCommit('f497f0a5', 4, 'huh');
+  sl.addCommit('b4f0bb37', 1, 'Renamed GitGrid to SwimLanes (Jim Weirich)');
+  sl.addCommit('a3c2b1b7', 0, 'Merge to production (Jim Weirich)', 'm');
 
-  gg.connect('b17c3898', 'b4f0bb37');
+  sl.connect('a127846d', 'a27bf806');
+  sl.connect('a27bf806', 'a3c2b1b7');
+  sl.connect('a3c2b1b7', 'a444807b');
 
-  gg.connect('c1f8c863', 'c2641c99');
+  sl.connect('b17c3898', 'b4f0bb37');
 
-  gg.connect('d146ab65', 'd265be23');
+  sl.connect('c1f8c863', 'c2641c99');
 
-  gg.connect('f12f1158', 'f2e605dd');
-  gg.connect('f2e605dd', 'f346ab65');
-  gg.connect('f346ab65', 'f497f0a5');
+  sl.connect('d146ab65', 'd265be23');
 
-  gg.connect('a127846d', 'b17c3898');
-  gg.connect('a127846d', 'c1f8c863');
-  gg.connect('a127846d', 'd146ab65');
-  gg.connect('a27bf806', 'f12f1158');
-  gg.connect('c2641c99', 'b220bb37');
-  gg.connect('b220bb37', 'a27bf806');
-  gg.connect('b4f0bb37', 'a3c2b1b7');
-  gg.connect('f497f0a5', 'b4f0bb37');
-  gg.connect('d265be23', 'b3f70bb');
+  sl.connect('f12f1158', 'f2e605dd');
+  sl.connect('f2e605dd', 'f346ab65');
+  sl.connect('f346ab65', 'f497f0a5');
 
-  gg.render();
+  sl.connect('a127846d', 'b17c3898');
+  sl.connect('a127846d', 'c1f8c863');
+  sl.connect('a127846d', 'd146ab65');
+  sl.connect('a27bf806', 'f12f1158');
+  sl.connect('c2641c99', 'b220bb37');
+  sl.connect('b220bb37', 'a27bf806');
+  sl.connect('b4f0bb37', 'a3c2b1b7');
+  sl.connect('f497f0a5', 'b4f0bb37');
+  sl.connect('d265be23', 'b3f70bb');
+
+  sl.render();
 }
 
 // -------------------------------------------------------------------

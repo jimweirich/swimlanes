@@ -76,7 +76,7 @@ function drawGrid() {
   GitGrid.drawCommit(new Commit(0,0, 'a'));
   GitGrid.drawCommit(new Commit(1,1, 'a'));
   var c = new Commit(3, 5, 'A commit');
-  c.draw(GitGrid.context);
+  c.draw(GitGrid);
 }
 // -------------------------------------------------------------------
 

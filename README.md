@@ -34,3 +34,7 @@ The above graph was generated from the following data:
 <pre>
 
 </pre>
+
+# TODO
+
+* Write some Ruby code to get a real git repository in that format.

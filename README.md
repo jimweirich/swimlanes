@@ -1,8 +1,9 @@
 # Swim Lanes
 
 The other day we were talking about git workflows and noted that the
-notation used in http://nvie.com/git-model was pretty cool, but none
-of our git ttols drew the commit graph in that manner.
+notation used in [the NVIE article](http://nvie.com/git-model "Git
+Model") was pretty cool, but none of our git ttols drew the commit
+graph in that manner.
 
 Wouldn't it be nice to have something like that.
 
@@ -20,4 +21,4 @@ generating the diagram.  I decided to use the HTML5 canvas object for
 drawing, and a javascript library to structure the data.  Swimlanes is
 the result of my Whyday efforts.
 
-(see http://whyday.org for more details on Whyday)
+(see [Whyday](http://whyday.org "Whyday") for more details on Whyday)

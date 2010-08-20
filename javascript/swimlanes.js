@@ -35,8 +35,13 @@ var SwimLanes = function (canvasId) {
       this.commits[hash] = c;
     },
 
-    connect: function(commit1, commit2) {
-      this.connections.push([commit1, commit2]);
+    connect: function(parent_hash, child_hash) {
+      this.connections.push([parent_hash, child_hash]);
+      var parent = this.commits[parent_hash];
+      var child = this.commits[child_hash];
+      if (parent && child) {
+        child.parents.push(parent);
+      }
     },
 
     render: function() {

@@ -1,4 +1,4 @@
-var SwimLanes = function (canvasId) {
+var SwimLanes = function (canvasId, hashTextId) {
 
   var Commit = function (hash, lane, line, when, description) {
     var result = {

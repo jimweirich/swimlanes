@@ -89,7 +89,6 @@ var SwimLanes = function (canvasId) {
     },
 
     whatLane: function(x) {
-      x = x - 30;               // Lame, this comes from the canvas padding
       var lane = Math.floor(x / this.laneWidth);
       if (lane >= this.lanes) {
         lane = undefined;
@@ -98,7 +97,6 @@ var SwimLanes = function (canvasId) {
     },
 
     whatLine: function(y) {
-      y = y - 30;               // Lame, this comes from the canvas padding
       var line = Math.floor(y / this.lineHeight);
       if (line >= this.line) {
         line = -1;

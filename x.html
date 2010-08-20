@@ -16,8 +16,9 @@
  </head>
   <body>
     <canvas id="canvas" onclick="javascript:function() { alert("HI"); sl.click; }">Default text</canvas>
+    <span id="hash"></span>
     <script>
-      var sl = swim("canvas");
+      var sl = swim("canvas", "hash");
       sl.render();
     </script>
   </body>

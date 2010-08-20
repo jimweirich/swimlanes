@@ -11,17 +11,17 @@ function swim(canvasId) {
   sl.addCommit(2, 'c2641c99', '2 days ago', 'Another feature branch (Jim Weirich)');
   sl.addBranch(3, "Feature 2");
   sl.addCommit(3, 'd146ab65', '2 days ago', 'Starting another feature (Jim Weirich)');
-  sl.addCommit(1, 'b220bb37', '2 days ago', 'Merge to dev (Jim Weirich)', 'm');
-  sl.addCommit(0, 'a27bf806', '1 day ago',  'Merge to production (Jim Weirich)', 'm');
+  sl.addCommit(1, 'b220bb37', '2 days ago', 'Merge to dev (Jim Weirich)');
+  sl.addCommit(0, 'a27bf806', '1 day ago',  'Merge to production (Jim Weirich)');
   sl.addBranch(4, "Feature 3");
   sl.addCommit(4, 'f12f1158', '1 day ago', 'huh (Jim Weirich)');
   sl.addCommit(3, 'd265be23', '7 hours ago', 'fixed bugs (Jim Weirich)');
   sl.addCommit(4, 'f2e605dd', '6 hours ago', 'bleh (Jim Weirich)');
-  sl.addCommit(1, 'b3f70bbc', '3 hours ago', 'Merge feature branch 2 (Jim Weirich)', 'm');
+  sl.addCommit(1, 'b3f70bbc', '3 hours ago', 'Merge feature branch 2 (Jim Weirich)');
   sl.addCommit(4, 'f346ab65', '1 hour ago', 'meh (Jim Weirich)');
   sl.addCommit(4, 'f497f0a5', '10 minutes ago', 'oops (Jim Weirich)');
-  sl.addCommit(1, 'b4f0bb37', '5 minutes ago', 'Merge feature branch 3 (Jim Weirich)', 'm');
-  sl.addCommit(0, 'a3c2b1b7', '40 seconds ago', 'Merge to production (Jim Weirich)', 'm');
+  sl.addCommit(1, 'b4f0bb37', '5 minutes ago', 'Merge feature branch 3 (Jim Weirich)');
+  sl.addCommit(0, 'a3c2b1b7', '40 seconds ago', 'Merge to production (Jim Weirich)');
 
   sl.connect('a127846d', 'a27bf806');
   sl.connect('a27bf806', 'a3c2b1b7');

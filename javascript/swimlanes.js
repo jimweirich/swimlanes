@@ -1,9 +1,8 @@
 var SwimLanes = function (canvasId) {
 
-  var Commit = function (hash, lane, line, when, description, type) {
+  var Commit = function (hash, lane, line, when, description) {
     var result = {
       hash: hash,
-      type: type || 'c',
       lane: lane,
       line: line,
       when: when,
@@ -30,8 +29,8 @@ var SwimLanes = function (canvasId) {
       this.line += 1;
     },
 
-    addCommit: function(lane, hash, when, description, type) {
-      var c = new Commit(hash, lane, this.line, when, description, type);
+    addCommit: function(lane, hash, when, description) {
+      var c = new Commit(hash, lane, this.line, when, description);
       this.line += 1;
       this.commits[hash] = c;
     },

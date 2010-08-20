@@ -103,15 +103,25 @@ var SwimLanes = function (canvasId) {
     lanes: 0,
     pts: 14,
     highLight: -1,
+    hashFont: 'normal 14px monospace',
+    descFont: 'normal 12px sans-serif',
+    branchFont: function () { return 'bold ' + this.pts + 'px sans-serif'; },
+
+    outlineColor: "#000",
+    backgroundColor: "#eee",
+    textColor: "#000",
+    commitColor: "#888",
+    mergeColor: "#00f",
+    dimColor: "#ccc",
 
     calculateSize: function () {
+      this.canvas = document.getElementById(canvasId);
+      this.context = this.canvas.getContext("2d");
       this.laneWidth = 40;
       this.lineHeight = this.laneWidth * 0.6;
       this.updateLanes();
       this.calculateWidth();
       this.calculateHeight();
-      this.canvas = document.getElementById(canvasId);
-      this.context = this.canvas.getContext("2d");
       this.canvas.width = this.width;
       this.canvas.height = this.height;
 
@@ -119,14 +129,23 @@ var SwimLanes = function (canvasId) {
     },
 
     calculateWidth: function () {
-      var longest = 0;
+      var longestDesc = 0;
+      var longestHash = 0;
       for (i in this.commits) {
         var c = this.commits[i];
-        if (c.description.length > longest) {
-          longest = c.description.length;
+        this.context.font = this.descFont;
+        var textWidth = this.context.measureText(c.description).width;
+        if (textWidth > longestDesc) {
+          longestDesc = textWidth;
+        }
+        this.context.font = this.hashFont;
+        textWidth = this.context.measureText(c.hash).width;
+        if (textWidth > longestHash) {
+          longestHash = textWidth;
         }
       }
-      this.width = (12 + longest) * this.pts * 0.5 + this.x(this.lanes);
+      this.descX = this.hashX() + longestHash + 10;
+      this.width = this.descX + longestDesc + 20;
     },
 
     calculateHeight: function() {
@@ -143,7 +162,7 @@ var SwimLanes = function (canvasId) {
       this.lanes += 1;
     },
 
-    outline: function (backgroundStyle) {
+    outline: function () {
       var w = this.canvas.width;
       var h = this.canvas.height;
       this.canvas.width = w;
@@ -154,13 +173,11 @@ var SwimLanes = function (canvasId) {
       this.context.lineTo(w-0.5, h-0.5);
       this.context.lineTo(w-0.5, 0.5);
       this.context.lineTo(0.5, 0.5);
-      this.context.strokeStyle = "#000";
+      this.context.strokeStyle = this.outlineColor;
       this.context.stroke();
 
-      if (backgroundStyle) {
-        this.context.fillStyle = backgroundStyle || "#fff";
-        this.context.fillRect(1, 1, w-2, h-2);
-      }
+      this.context.fillStyle = this.backgroundColor;
+      this.context.fillRect(1, 1, w-2, h-2);
     },
 
     scale: function (n) {
@@ -176,37 +193,43 @@ var SwimLanes = function (canvasId) {
       return line * h + h / 2.0;
     },
 
+    hashX: function () {
+      return this.x(this.lanes);
+    },
+
     renderCommit: function(commit, dim) {
       var x = this.x(commit.lane);
       var y = this.y(commit.line);
       this.context.beginPath();
       this.context.arc(x, y, this.scale(0.2), Math.PI*2, false);
       this.context.closePath();
-      this.context.strokeStyle = "#000";
+      this.context.strokeStyle = this.textColor;
       this.context.lineWidth = 3;
       this.context.stroke();
       if (commit.type === 'c') {
-        this.context.fillStyle = "#888";
+        this.context.fillStyle = this.commitColor;
       } else {
-        this.context.fillStyle = "#00f";
+        this.context.fillStyle = this.mergeColor;
       }
       this.context.fill();
 
       if (dim) {
-        this.context.fillStyle = "#ccc";
+        this.context.fillStyle = this.dimColor;
       } else {
-        this.context.fillStyle = "#000";
+        this.context.fillStyle = this.textColor;
       }
-      this.context.font = 'normal 12px sans-serif';
       this.context.textBaseline = 'middle';
       this.context.textAlign = "left";
-      this.context.fillText(commit.hash + " -- " + commit.description, this.x(this.lanes), y);
+      this.context.font = this.hashFont;
+      this.context.fillText(commit.hash, this.hashX(), y);
+      this.context.font = this.descFont;
+      this.context.fillText(commit.description, this.descX, y);
 
       this.context.beginPath();
       this.context.moveTo(x + this.scale(0.4), y);
       this.context.lineTo(this.x(this.lanes) - this.scale(0.2), y);
       this.context.lineWidth = 1;
-      this.context.strokeStyle = "#ccc";
+      this.context.strokeStyle = this.dimColor;
       this.context.stroke();
     },
 
@@ -222,10 +245,10 @@ var SwimLanes = function (canvasId) {
       this.context.beginPath();
       this.context.moveTo(x1, y1);
       if (commit1.lane === commit2.lane) {
-        this.context.strokeStyle = "#000";
+        this.context.strokeStyle = this.textColor;
         this.context.lineTo(x2, y2);
       } else {
-        this.context.strokeStyle = "#00f";
+        this.context.strokeStyle = this.mergeColor;
         this.context.quadraticCurveTo((x1+3*x2)/4.0, y1, x2, y2);
       }
       this.context.lineWidth = 3;
@@ -233,13 +256,13 @@ var SwimLanes = function (canvasId) {
     },
 
     renderBranch: function(branch) {
-      var pts = this.pts;
-      var w = branch.name.length * pts * 0.6;
+      this.context.font = this.branchFont();
+      var w = this.context.measureText(branch.name).width + 4;
       var x = this.x(branch.lane);
       var y = this.y(branch.line);
-      this.context.clearRect(x-w/2.0, y-9, w, pts+4);
-      this.context.fillStyle = "#000";
-      this.context.font = 'bold ' + pts + 'px sans-serif';
+      this.context.fillStyle = this.backgroundColor;
+      this.context.fillRect(x-w/2.0, y-9, w, this.pts+4);
+      this.context.fillStyle = this.textColor;
       this.context.textAlign = "center";
       this.context.textBaseline = 'middle';
       this.context.fillText(branch.name, this.x(branch.lane), this.y(branch.line));
@@ -269,7 +292,7 @@ var SwimLanes = function (canvasId) {
     },
 
     renderElements: function () {
-      this.outline("#eee");
+      this.outline();
       this.renderConnections();
       this.renderCommits();
       this.renderBranches();

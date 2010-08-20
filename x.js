@@ -17,7 +17,7 @@ function swim(canvasId) {
   sl.addCommit('f12f1158', 4, 'huh (Jim Weirich)');
   sl.addCommit('d265be23', 3, 'fixed bugs (Jim Weirich)');
   sl.addCommit('f2e605dd', 4, 'bleh (Jim Weirich)');
-  sl.addCommit('b3f70bb', 1, 'Merge feature branch 2 (Jim Weirich)', 'm');
+  sl.addCommit('b3f70bbc', 1, 'Merge feature branch 2 (Jim Weirich)', 'm');
   sl.addCommit('f346ab65', 4, 'meh (Jim Weirich)');
   sl.addCommit('f497f0a5', 4, 'oops (Jim Weirich)');
   sl.addCommit('b4f0bb37', 1, 'Merge feature branch 3 (Jim Weirich)', 'm');
@@ -45,7 +45,7 @@ function swim(canvasId) {
   sl.connect('b220bb37', 'a27bf806');
   sl.connect('b4f0bb37', 'a3c2b1b7');
   sl.connect('f497f0a5', 'b4f0bb37');
-  sl.connect('d265be23', 'b3f70bb');
+  sl.connect('d265be23', 'b3f70bbc');
 
   return sl;
 }

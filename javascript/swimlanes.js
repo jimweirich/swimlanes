@@ -6,11 +6,20 @@ var SwimLanes = function (canvasId) {
       lane: lane,
       line: line,
       when: when,
-      dim: false,
+      showFlag: 'n',
       description: description,
       parents: [],
 
       isMerge: function () { return this.parents.length > 1; },
+
+      isShown:  function () { return ! this.isDim() && ! this.isMidDim(); },
+      isDim:    function () { return this.showFlag === 'd'; },
+      isHidden: function () { return this.showFlag === 'h'; },
+      isUnemphasized: function () { return this.isHidden() || this.isDim(); },
+
+      show: function () { this.showFlag = 's'; },
+      dim:  function () { this.showFlag = 'd'; },
+      hide: function () { this.showFlag = 'h'; },
     };
     return result;
   }
@@ -100,7 +109,6 @@ var SwimLanes = function (canvasId) {
     locateCommit: function(lane, line) {
       for (i in this.commits) {
         var c = this.commits[i];
-        console.log("c=(" + c.lane + "," + c.line + ") h=(" + lane + "," + line + ")");
         if (c.lane === lane && c.line === line) {
           return c;
         }
@@ -119,14 +127,14 @@ var SwimLanes = function (canvasId) {
       console.log("CLICKED, x=" + x + " (" + hitLane + "), y=" + y + " (" + hitLine + ")");
       console.log(hitCommit);
       if (hitCommit) {
-        this.allDim();
-        this.highlightParents(hitCommit, hitCommit.isMerge());
+        this.allHide();
+        this.highlightParents(hitCommit);
         this.highlighted = true;
       } else if (hitLane || hitLane == 0) {
         this.highlightLane(hitLane);
         this.highlighted = true;
       } else {
-        this.noDim();
+        this.allShow();
         this.highlighted = false;
       }
       this.renderElements();
@@ -151,11 +159,23 @@ var SwimLanes = function (canvasId) {
     backgroundColor: "#eee",
     textColor: "#000",
     lineColor: "#000",
-    commitColor: "#888",
     mergeColor: "#00f",
-    dimCommitColor: "#ccc",
-    dimMergeColor: "#ccf",
-    dimColor: "#ccc",
+
+    commitTextColor: "#000",
+    commitFillColor: "#888",
+    commitLineColor: "#000",
+
+    mergeCommitTextColor: "#ccc",
+    mergeCommitFillColor: "#00f",
+    mergeCommitLineColor: "#000",
+
+    dimCommitTextColor: "#aaf",
+    dimCommitFillColor: "#00f",
+    dimCommitLineColor: "#000",
+
+    hiddenCommitTextColor: "#ddd",
+    hiddenCommitFillColor: "#ddd",
+    hiddenCommitLineColor: "#ddd",
 
     calculateSize: function () {
       this.canvas = document.getElementById(canvasId);
@@ -242,34 +262,36 @@ var SwimLanes = function (canvasId) {
       return this.x(this.lanes);
     },
 
-    noDim: function () {
+    allShow: function () {
       for (i in this.commits) {
-        this.commits[i].dim = false;
+        this.commits[i].show();
       }
     },
 
-    allDim: function () {
+    allHide: function () {
       for (i in this.commits) {
-        this.commits[i].dim = true;
+        this.commits[i].hide();
       }
     },
 
-    highlightParents: function(commit, showMerge) {
-      if (! commit.dim) { return; }
-      if (! commit.isMerge() || showMerge) {
-        commit.dim = false;
+    highlightParents: function(commit) {
+      //if (commit.isUnemphasized()) { return; }
+      if (commit.isMerge()) {
+        commit.dim();
+      } else {
+        commit.show();
       }
       for (i in commit.parents) {
-        this.highlightParents(commit.parents[i], showMerge);
+        this.highlightParents(commit.parents[i]);
       }
     },
 
     highlightLane: function(lane) {
       for (i in this.commits) {
         if (this.commits[i].lane === lane) {
-          this.commits[i].dim = false;
+          this.commits[i].show();
         } else {
-          this.commits[i].dim = true;
+          this.commits[i].hide();
         }
       }
     },
@@ -277,18 +299,20 @@ var SwimLanes = function (canvasId) {
     renderCommit: function(commit) {
       var x = this.x(commit.lane);
       var y = this.y(commit.line);
-      if (commit.isMerge() && commit.dim) {
-        this.context.fillStyle = this.dimMergeColor;
-        this.context.strokeStyle = this.dimMergeColor;
-      } else if (commit.dim) {
-        this.context.fillStyle = this.dimCommitColor;
-        this.context.strokeStyle = this.dimColor;
+      console.log("DBG: commit.isHidden()='" + commit.isHidden() + "'");
+      console.log("DBG: commit.showFlag='" + commit.showFlag + "'");
+      if (commit.isDim()) {
+        this.context.fillStyle = this.dimCommitFillColor;
+        this.context.strokeStyle = this.dimCommitLineColor;
+      } else if (commit.isHidden()) {
+        this.context.fillStyle = this.hiddenCommitFillColor;
+        this.context.strokeStyle = this.hiddenCommitLineColor;
       } else if (commit.isMerge()) {
-        this.context.fillStyle = this.mergeColor;
-        this.context.strokeStyle = this.lineColor;
+        this.context.fillStyle = this.mergeCommitFillColor;
+        this.context.strokeStyle = this.mergeCommitLineColor;
       } else {
-        this.context.fillStyle = this.commitColor;
-        this.context.strokeStyle = this.lineColor;
+        this.context.fillStyle = this.commitFillColor;
+        this.context.strokeStyle = this.commitLineColor;
       }
       this.context.beginPath();
       this.context.arc(x, y, this.scale(0.2), Math.PI*2, false);
@@ -297,11 +321,17 @@ var SwimLanes = function (canvasId) {
       this.context.stroke();
       this.context.fill();
 
-      if (commit.dim) {
-        this.context.fillStyle = this.dimColor;
+      if (commit.isHidden()) {
+        console.log("DBG: HIDDEN COLOR");
+        this.context.fillStyle = this.hiddenCommitTextColor;
+      } else if (commit.isDim()) {
+        console.log("DBG: DIM COLOR");
+        this.context.fillStyle = this.dimCommitTextColor;
       } else {
-        this.context.fillStyle = this.textColor;
+        console.log("DBG: COMMIT COLOR");
+        this.context.fillStyle = this.commitTextColor;
       }
+      console.log("DBG: this.context.fillStyle='" + this.context.fillStyle + "'");
       this.context.textBaseline = 'middle';
       this.context.textAlign = "left";
       this.context.font = this.hashFont;
@@ -315,7 +345,7 @@ var SwimLanes = function (canvasId) {
       this.context.moveTo(x + this.scale(0.4), y);
       this.context.lineTo(this.x(this.lanes) - this.scale(0.2), y);
       this.context.lineWidth = 1;
-      this.context.strokeStyle = this.dimColor;
+      this.context.strokeStyle = this.hiddenCommitLineColor;
       this.context.stroke();
     },
 
@@ -331,15 +361,15 @@ var SwimLanes = function (canvasId) {
       this.context.beginPath();
       this.context.moveTo(x1, y1);
       if (parent.lane === child.lane) {
-        if (parent.dim || child.dim) {
-          this.context.strokeStyle = this.dimColor;
+        if (parent.isHidden() || child.isHidden()) {
+          this.context.strokeStyle = this.hiddenCommitLineColor;
         } else {
           this.context.strokeStyle = this.lineColor;
         }
         this.context.lineTo(x2, y2);
       } else {
-        if (parent.dim || child.dim) {
-          this.context.strokeStyle = this.dimColor;
+        if (parent.isHidden() || child.isHidden()) {
+          this.context.strokeStyle = this.hiddenCommitLineColor;
         } else {
           this.context.strokeStyle = this.mergeColor;
         }

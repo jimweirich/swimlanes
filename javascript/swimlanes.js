@@ -308,8 +308,6 @@ var SwimLanes = function (canvasId, hashTextId) {
     renderCommit: function(commit) {
       var x = this.x(commit.lane);
       var y = this.y(commit.line);
-      console.log("DBG: commit.isHidden()='" + commit.isHidden() + "'");
-      console.log("DBG: commit.showFlag='" + commit.showFlag + "'");
       if (commit.isDim()) {
         this.context.fillStyle = this.dimCommitFillColor;
         this.context.strokeStyle = this.dimCommitLineColor;
@@ -331,16 +329,12 @@ var SwimLanes = function (canvasId, hashTextId) {
       this.context.fill();
 
       if (commit.isHidden()) {
-        console.log("DBG: HIDDEN COLOR");
         this.context.fillStyle = this.hiddenCommitTextColor;
       } else if (commit.isDim()) {
-        console.log("DBG: DIM COLOR");
         this.context.fillStyle = this.dimCommitTextColor;
       } else {
-        console.log("DBG: COMMIT COLOR");
         this.context.fillStyle = this.commitTextColor;
       }
-      console.log("DBG: this.context.fillStyle='" + this.context.fillStyle + "'");
       this.context.textBaseline = 'middle';
       this.context.textAlign = "left";
       this.context.font = this.hashFont;

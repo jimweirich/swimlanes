@@ -27,7 +27,9 @@ function swim(canvasId) {
   sl.connect('a27bf806', 'a3c2b1b7');
   sl.connect('a3c2b1b7', 'a444807b');
 
-  sl.connect('b17c3898', 'b4f0bb37');
+  sl.connect('b17c3898', 'b220bb37');
+  sl.connect('b220bb37', 'b3f70bbc');
+  sl.connect('b3f70bbc', 'b4f0bb37');
 
   sl.connect('c1f8c863', 'c2641c99');
 

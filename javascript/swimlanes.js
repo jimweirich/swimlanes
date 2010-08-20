@@ -80,12 +80,32 @@ var SwimLanes = function (canvasId) {
     },
 
     whatLane: function(x) {
-      x = x - 30;               // Lame, this comes from the padding
+      x = x - 30;               // Lame, this comes from the canvas padding
       var lane = Math.floor(x / this.laneWidth);
       if (lane >= this.lanes) {
-        lane = -1;
+        lane = undefined;
       }
       return lane;
+    },
+
+    whatLine: function(y) {
+      y = y - 30;               // Lame, this comes from the canvas padding
+      var line = Math.floor(y / this.lineHeight);
+      if (line >= this.line) {
+        line = -1;
+      }
+      return line;
+    },
+
+    locateCommit: function(lane, line) {
+      for (i in this.commits) {
+        var c = this.commits[i];
+        console.log("c=(" + c.lane + "," + c.line + ") h=(" + lane + "," + line + ")");
+        if (c.lane === lane && c.line === line) {
+          return c;
+        }
+      }
+      return undefined;
     },
 
     click: function(e) {
@@ -130,8 +150,11 @@ var SwimLanes = function (canvasId) {
     outlineColor: "#000",
     backgroundColor: "#eee",
     textColor: "#000",
+    lineColor: "#000",
     commitColor: "#888",
     mergeColor: "#00f",
+    dimCommitColor: "#ccc",
+    dimMergeColor: "#ccf",
     dimColor: "#ccc",
 
     calculateSize: function () {
@@ -148,31 +171,23 @@ var SwimLanes = function (canvasId) {
       this.canvas.addEventListener("click", function(e) { result.click(e); } );
     },
 
-    calculateWidth: function () {
-      var longestDesc = 0;
-      var longestHash = 0;
-      var longestWhen = 0;
-      for (i in this.commits) {
-        var c = this.commits[i];
-
-        this.context.font = this.hashFont;
-        textWidth = this.context.measureText(c.hash).width;
-        if (textWidth > longestHash) {
-          longestHash = textWidth;
-        }
-
-        this.context.font = this.descFont;
-        var textWidth = this.context.measureText(c.description).width;
-        if (textWidth > longestDesc) {
-          longestDesc = textWidth;
-        }
-
-        this.context.font = this.whenFont;
-        textWidth = this.context.measureText(c.when).width;
-        if (textWidth > longestWhen) {
-          longestWhen = textWidth;
+    longestWidth: function(font, list, fun) {
+      var oldFont = this.context.font;
+      this.context.font = font;
+      var longest = 0;
+      for (i in list) {
+        textWidth = this.context.measureText(fun(list[i])).width;
+        if (textWidth > longest) {
+          longest = textWidth;
         }
       }
+      return longest;
+    },
+
+    calculateWidth: function () {
+      var longestHash = this.longestWidth(this.hashFont, this.commits, function(c) { return c.hash });
+      var longestWhen = this.longestWidth(this.whenFont, this.commits, function(c) { return c.when });
+      var longestDesc = this.longestWidth(this.descFont, this.commits, function(c) { return c.description });
       this.whenX = this.hashX() + longestHash + 10;
       this.descX = this.whenX + longestWhen + 10;
       this.width = this.descX + longestDesc + 20;
@@ -275,6 +290,18 @@ var SwimLanes = function (canvasId) {
         this.context.fillStyle = this.commitColor;
         this.context.strokeStyle = this.lineColor;
       }
+      this.context.beginPath();
+      this.context.arc(x, y, this.scale(0.2), Math.PI*2, false);
+      this.context.closePath();
+      this.context.lineWidth = 3;
+      this.context.stroke();
+      this.context.fill();
+
+      if (commit.dim) {
+        this.context.fillStyle = this.dimColor;
+      } else {
+        this.context.fillStyle = this.textColor;
+      }
       this.context.textBaseline = 'middle';
       this.context.textAlign = "left";
       this.context.font = this.hashFont;
@@ -296,10 +323,10 @@ var SwimLanes = function (canvasId) {
       if (! parent || ! child) {
         return;
       }
-      var x1 = this.x(commit1.lane);
-      var y1 = this.y(commit1.line);
-      var x2 = this.x(commit2.lane);
-      var y2 = this.y(commit2.line);
+      var x1 = this.x(parent.lane);
+      var y1 = this.y(parent.line);
+      var x2 = this.x(child.lane);
+      var y2 = this.y(child.line);
 
       this.context.beginPath();
       this.context.moveTo(x1, y1);
@@ -311,7 +338,11 @@ var SwimLanes = function (canvasId) {
         }
         this.context.lineTo(x2, y2);
       } else {
-        this.context.strokeStyle = this.mergeColor;
+        if (parent.dim || child.dim) {
+          this.context.strokeStyle = this.dimColor;
+        } else {
+          this.context.strokeStyle = this.mergeColor;
+        }
         this.context.quadraticCurveTo((x1+3*x2)/4.0, y1, x2, y2);
       }
       this.context.lineWidth = 3;
@@ -343,7 +374,7 @@ var SwimLanes = function (canvasId) {
     renderCommits: function() {
       for (var i in this.commits) {
         var commit = this.commits[i];
-        this.renderCommit(commit, this.highLight >= 0 && commit.lane !== this.highLight);
+        this.renderCommit(commit);
       }
     },
 

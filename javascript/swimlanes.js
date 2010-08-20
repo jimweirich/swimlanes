@@ -6,6 +6,7 @@ var SwimLanes = function (canvasId) {
       lane: lane,
       line: line,
       when: when,
+      dim: false,
       description: description,
     };
     return result;
@@ -89,14 +90,23 @@ var SwimLanes = function (canvasId) {
       var x = cell.x;
       var y = cell.y;
 
-      //console.log("CLICKED, x=" + x + ", y=" + y);
-      var newLane = this.whatLane(x);
-      if (newLane === this.highLight) {
-        this.highLight = -1;
+      var hitLane = this.whatLane(x);
+      var hitLine = this.whatLine(y);
+      var hitCommit = this.locateCommit(hitLane, hitLine);
+      console.log("CLICKED, x=" + x + " (" + hitLane + "), y=" + y + " (" + hitLine + ")");
+      console.log(hitCommit);
+      if (hitCommit) {
+        this.allDim();
+        this.highlightParents(hitCommit, hitCommit.isMerge());
+        this.highlighted = true;
+      } else if (hitLane || hitLane == 0) {
+        this.highlightLane(hitLane);
+        this.highlighted = true;
       } else {
-        this.highLight = newLane;
+        this.noDim();
+        this.highlighted = false;
       }
-      this.renderElements(true);
+      this.renderElements();
     },
 
     // Private -------------------------------------------------------
@@ -107,7 +117,8 @@ var SwimLanes = function (canvasId) {
     branches: [],
     lanes: 0,
     pts: 14,
-    highLight: -1,
+    highlighted: false,
+
     hashFont: 'normal 14px monospace',
     whenFont: 'normal 12px sans-serif',
     descFont: 'normal 12px sans-serif',
@@ -213,26 +224,53 @@ var SwimLanes = function (canvasId) {
       return this.x(this.lanes);
     },
 
-    renderCommit: function(commit, dim) {
+    noDim: function () {
+      for (i in this.commits) {
+        this.commits[i].dim = false;
+      }
+    },
+
+    allDim: function () {
+      for (i in this.commits) {
+        this.commits[i].dim = true;
+      }
+    },
+
+    highlightParents: function(commit, showMerge) {
+      if (! commit.dim) { return; }
+      if (! commit.isMerge() || showMerge) {
+        commit.dim = false;
+      }
+      for (i in commit.parents) {
+        this.highlightParents(commit.parents[i], showMerge);
+      }
+    },
+
+    highlightLane: function(lane) {
+      for (i in this.commits) {
+        if (this.commits[i].lane === lane) {
+          this.commits[i].dim = false;
+        } else {
+          this.commits[i].dim = true;
+        }
+      }
+    },
+
+    renderCommit: function(commit) {
       var x = this.x(commit.lane);
       var y = this.y(commit.line);
-      this.context.beginPath();
-      this.context.arc(x, y, this.scale(0.2), Math.PI*2, false);
-      this.context.closePath();
-      this.context.strokeStyle = this.textColor;
-      this.context.lineWidth = 3;
-      this.context.stroke();
-      if (commit.type === 'c') {
-        this.context.fillStyle = this.commitColor;
-      } else {
+      if (commit.isMerge() && commit.dim) {
+        this.context.fillStyle = this.dimMergeColor;
+        this.context.strokeStyle = this.dimMergeColor;
+      } else if (commit.dim) {
+        this.context.fillStyle = this.dimCommitColor;
+        this.context.strokeStyle = this.dimColor;
+      } else if (commit.isMerge()) {
         this.context.fillStyle = this.mergeColor;
-      }
-      this.context.fill();
-
-      if (dim) {
-        this.context.fillStyle = this.dimColor;
+        this.context.strokeStyle = this.lineColor;
       } else {
-        this.context.fillStyle = this.textColor;
+        this.context.fillStyle = this.commitColor;
+        this.context.strokeStyle = this.lineColor;
       }
       this.context.textBaseline = 'middle';
       this.context.textAlign = "left";
@@ -251,8 +289,8 @@ var SwimLanes = function (canvasId) {
       this.context.stroke();
     },
 
-    renderConnection: function(commit1, commit2) {
-      if (! commit1 || ! commit2) {
+    renderConnection: function(parent, child) {
+      if (! parent || ! child) {
         return;
       }
       var x1 = this.x(commit1.lane);
@@ -262,8 +300,12 @@ var SwimLanes = function (canvasId) {
 
       this.context.beginPath();
       this.context.moveTo(x1, y1);
-      if (commit1.lane === commit2.lane) {
-        this.context.strokeStyle = this.textColor;
+      if (parent.lane === child.lane) {
+        if (parent.dim || child.dim) {
+          this.context.strokeStyle = this.dimColor;
+        } else {
+          this.context.strokeStyle = this.lineColor;
+        }
         this.context.lineTo(x2, y2);
       } else {
         this.context.strokeStyle = this.mergeColor;

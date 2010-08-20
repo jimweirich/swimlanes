@@ -8,6 +8,9 @@ var SwimLanes = function (canvasId) {
       when: when,
       dim: false,
       description: description,
+      parents: [],
+
+      isMerge: function () { return this.parents.length > 1; },
     };
     return result;
   }

@@ -114,6 +114,14 @@ var SwimLanes = function (canvasId) {
       return undefined;
     },
 
+    updateHashText: function(text) {
+      hashTextElement = document.getElementById(hashTextId);
+      console.log("DBG: hashTextElement='" + hashTextElement + "'");
+      if (hashTextElement) {
+        hashTextElement.innerHTML = text;
+      }
+    },
+
     click: function(e) {
       var cell = this.getCursorPosition(e);
       var x = cell.x;
@@ -128,12 +136,15 @@ var SwimLanes = function (canvasId) {
         this.allHide();
         this.highlightParents(hitCommit);
         this.highlighted = true;
+        this.updateHashText(hitCommit.hash);
       } else if (hitLane || hitLane == 0) {
         this.highlightLane(hitLane);
         this.highlighted = true;
+        this.updateHashText('');
       } else {
         this.allShow();
         this.highlighted = false;
+        this.updateHashText('');
       }
       this.renderElements();
     },

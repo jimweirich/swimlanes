@@ -1,6 +1,6 @@
 
-function swim(canvasId) {
-  var sl = new SwimLanes(canvasId);
+function swim(canvasId, hashTextId) {
+  var sl = new SwimLanes(canvasId, hashTextId);
 
   sl.addBranch(0, "Prod");
   sl.addCommit(0, 'a127846d', '125 days ago', 'Initial commit (Jim Weirich)');

@@ -284,14 +284,19 @@ var SwimLanes = function (canvasId, hashTextId) {
     },
 
     highlightParents: function(commit) {
-      //if (commit.isUnemphasized()) { return; }
-      if (commit.isMerge()) {
-        commit.dim();
-      } else {
-        commit.show();
-      }
-      for (i in commit.parents) {
-        this.highlightParents(commit.parents[i]);
+      var nodes = [commit];
+      while (nodes.length > 0) {
+        var c = nodes.shift();
+        if (c.isHidden()) {
+          if (c.isMerge()) {
+            c.dim();
+          } else {
+            c.show();
+          }
+          for (i in c.parents) {
+            nodes.push(c.parents[i]);
+          }
+        }
       }
     },
 
